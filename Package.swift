@@ -1,5 +1,4 @@
 // swift-tools-version:4.0
-
 //
 //  Package.swift
 //  SwiftJava
@@ -32,6 +31,6 @@ let package = Package(
             ],
             path: "./Sources"
         )
-    ]
+    ],
+    swiftLanguageVersions: [5, 4]
 )
-
