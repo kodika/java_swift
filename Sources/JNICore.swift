@@ -113,6 +113,10 @@ open class JNICore {
         return tenv
     }
 
+    open var errorLogger: (_ message: String) -> Void = { message in
+        JNI.report(message)
+    }
+
     open func report( _ msg: String, _ file: StaticString = #file, _ line: Int = #line ) {
         NSLog( "\(msg) - at \(file):\(line)" )
         if let throwable: jthrowable = ExceptionCheck() {
