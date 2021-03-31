@@ -32,5 +32,5 @@ let package = Package(
             path: "./Sources"
         )
     ],
-    swiftLanguageVersions: [5, 4]
+    swiftLanguageVersions: [.v5]
 )
