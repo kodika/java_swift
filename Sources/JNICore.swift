@@ -11,9 +11,13 @@
 
 import Foundation
 import Dispatch
+#if os(Android)
 import Glibc
+#endif
 
 @_exported import CJavaVM
+
+#if os(Android)
 
 @_silgen_name("JNI_OnLoad")
 public func JNI_OnLoad( jvm: UnsafeMutablePointer<JavaVM?>, ptr: UnsafeRawPointer ) -> jint {
@@ -47,6 +51,7 @@ public func JNI_OnLoad( jvm: UnsafeMutablePointer<JavaVM?>, ptr: UnsafeRawPointe
 
     return jint(JNI_VERSION_1_6)
 }
+#endif
 
 fileprivate class FatalErrorMessage {
     let description: String
