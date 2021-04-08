@@ -138,55 +138,59 @@ open class JNICore {
 #if os(Android)
         return true
 #else
-        if jvm != nil {
-            report( "JVM can only be initialised once", file, line )
-            return true
-        }
+        
+        //HOTFIX: Temporary disable initJVM to compile in Xcode
+        return true
 
-        var options: [String]? = options
-        if options == nil {
-            var classpath: String = String( cString: getenv("HOME") )+"/.swiftjava.jar"
-            if let CLASSPATH: UnsafeMutablePointer<Int8> = getenv( "CLASSPATH" ) {
-                classpath += ":"+String( cString: CLASSPATH )
-            }
-            options = ["-Djava.class.path="+classpath,
-                       // add to bootclasspath as threads not started using Thread class
-                       // will not have the correct classloader and be missing classpath
-                       "-Xbootclasspath/a:"+classpath]
-        }
-
-        var vmOptions = [JavaVMOption]( repeating: JavaVMOption(), count: options?.count ?? 1 )
-
-        return vmOptions.withUnsafeMutableBufferPointer {
-            (vmOptionsPtr) in
-            var vmArgs = JavaVMInitArgs()
-            vmArgs.version = jint(JNI_VERSION_1_6)
-            vmArgs.nOptions = jint(options?.count ?? 0)
-            vmArgs.options = vmOptionsPtr.baseAddress
-
-            if let options: [String] = options {
-                for i in 0..<vmOptionsPtr.count {
-                    options[i].withCString {
-                        (cString) in
-                        vmOptionsPtr[i].optionString = strdup( cString )
-                    }
-                }
-            }
-
-            var tenv: UnsafeMutablePointer<JNIEnv?>?
-            if withPointerToRawPointer(to: &tenv, {
-                JNI_CreateJavaVM( &self.jvm, $0, &vmArgs )
-            } ) != jint(JNI_OK) {
-                report( "JNI_CreateJavaVM failed", file, line )
-                return false
-            }
-
-            if pthread_setspecific( JNICore.envVarKey, tenv ) != 0 {
-                JNI.report( "Could not set pthread specific tenv" )
-            }
-            self.api = self.env!.pointee!.pointee
-            return true
-        }
+//        if jvm != nil {
+//            report( "JVM can only be initialised once", file, line )
+//            return true
+//        }
+//
+//        var options: [String]? = options
+//        if options == nil {
+//            var classpath: String = String( cString: getenv("HOME") )+"/.swiftjava.jar"
+//            if let CLASSPATH: UnsafeMutablePointer<Int8> = getenv( "CLASSPATH" ) {
+//                classpath += ":"+String( cString: CLASSPATH )
+//            }
+//            options = ["-Djava.class.path="+classpath,
+//                       // add to bootclasspath as threads not started using Thread class
+//                       // will not have the correct classloader and be missing classpath
+//                       "-Xbootclasspath/a:"+classpath]
+//        }
+//
+//        var vmOptions = [JavaVMOption]( repeating: JavaVMOption(), count: options?.count ?? 1 )
+//
+//        return vmOptions.withUnsafeMutableBufferPointer {
+//            (vmOptionsPtr) in
+//            var vmArgs = JavaVMInitArgs()
+//            vmArgs.version = jint(JNI_VERSION_1_6)
+//            vmArgs.nOptions = jint(options?.count ?? 0)
+//            vmArgs.options = vmOptionsPtr.baseAddress
+//
+//            if let options: [String] = options {
+//                for i in 0..<vmOptionsPtr.count {
+//                    options[i].withCString {
+//                        (cString) in
+//                        vmOptionsPtr[i].optionString = strdup( cString )
+//                    }
+//                }
+//            }
+//
+//            var tenv: UnsafeMutablePointer<JNIEnv?>?
+//            if withPointerToRawPointer(to: &tenv, {
+//                JNI_CreateJavaVM( &self.jvm, $0, &vmArgs )
+//            } ) != jint(JNI_OK) {
+//                report( "JNI_CreateJavaVM failed", file, line )
+//                return false
+//            }
+//
+//            if pthread_setspecific( JNICore.envVarKey, tenv ) != 0 {
+//                JNI.report( "Could not set pthread specific tenv" )
+//            }
+//            self.api = self.env!.pointee!.pointee
+//            return true
+//        }
 #endif
     }
 
